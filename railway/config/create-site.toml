@@ -1,0 +1,7 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "railway/Dockerfile"
+
+[deploy]
+startCommand = "bash -c 'set -e; wait-for-it -t 300 db:3306; wait-for-it -t 120 redis:6379; until grep -q db_host sites/common_site_config.json 2>/dev/null; do echo waiting config; sleep 5; done; if [ -f sites/frontend/site_config.json ]; then echo site exists; exit 0; fi; bench new-site frontend --mariadb-user-host-login-scope=% --admin-password=$FRAPPE_ADMIN_PASSWORD --db-root-username=root --db-root-password=$MYSQL_ROOT_PASSWORD --install-app erpnext --install-app hrms --set-default; bench --site frontend install-app rrhh_seleccion; bench --site frontend migrate'"
+restartPolicyType = "NEVER"

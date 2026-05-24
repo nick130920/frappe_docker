@@ -1,0 +1,7 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "railway/Dockerfile"
+
+[deploy]
+startCommand = "bench worker --queue long,default,short"
+restartPolicyType = "ON_FAILURE"

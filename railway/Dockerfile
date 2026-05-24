@@ -49,6 +49,6 @@ RUN chmod 755 /usr/local/bin/entrypoint.sh
 COPY resources/core/start.sh /usr/local/bin/start.sh
 RUN chmod 755 /usr/local/bin/start.sh
 
-USER frappe
+# Root entrypoint ajusta permisos de volúmenes Railway y ejecuta como frappe
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["start.sh"]

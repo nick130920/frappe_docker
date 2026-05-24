@@ -1,6 +1,7 @@
 # Environment Variables
 .env
 pwd-hrms.env
+railway/CREDENTIALS.txt
 
 # mounted volume
 sites

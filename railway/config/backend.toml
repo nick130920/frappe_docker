@@ -1,0 +1,9 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "railway/Dockerfile"
+watchPatterns = ["railway/Dockerfile", "apps.json", "resources/**"]
+
+[deploy]
+startCommand = "start.sh"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10

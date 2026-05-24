@@ -1,0 +1,7 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "railway/Dockerfile"
+
+[deploy]
+startCommand = "node /home/frappe/frappe-bench/apps/frappe/socketio.js"
+restartPolicyType = "ON_FAILURE"
