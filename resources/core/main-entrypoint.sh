@@ -1,19 +1,30 @@
 #!/bin/bash
-set -e
+# No usar set -e global: fallos en assets no deben tumbar el contenedor antes del fallback.
 
 ASSETS_PATH="/home/frappe/frappe-bench/sites/assets"
 BAKED_PATH="/home/frappe/frappe-bench/assets"
+SITES_DIR="/home/frappe/frappe-bench/sites"
 
 link_assets() {
   echo "Linking fresh assets to volume..."
-  rm -rf "$ASSETS_PATH"
-  mkdir -p "$(dirname "$ASSETS_PATH")"
-  if ln -sfn "$BAKED_PATH" "$ASSETS_PATH" 2>/dev/null; then
+  mkdir -p "$(dirname "$ASSETS_PATH")" "$SITES_DIR"
+
+  rm -rf "$ASSETS_PATH" 2>/dev/null || true
+
+  if ln -sfn "$BAKED_PATH" "$ASSETS_PATH" 2>/dev/null && [ -e "$ASSETS_PATH" ]; then
+    echo "Assets linked via symlink."
     return 0
   fi
+
   echo "Symlink failed; copying baked assets into sites..."
   mkdir -p "$ASSETS_PATH"
-  cp -a "$BAKED_PATH/." "$ASSETS_PATH/"
+  if cp -a "$BAKED_PATH/." "$ASSETS_PATH/" 2>/dev/null; then
+    echo "Assets copied."
+    return 0
+  fi
+
+  echo "WARN: could not link or copy assets; continuing anyway."
+  return 0
 }
 
 run_as_frappe() {
@@ -24,9 +35,9 @@ run_as_frappe() {
 }
 
 if [ "$(id -u)" = "0" ]; then
-  chown -R frappe:frappe /home/frappe/frappe-bench/sites 2>/dev/null || true
+  chown -R frappe:frappe "$SITES_DIR" 2>/dev/null || true
   link_assets
-  chown -R frappe:frappe /home/frappe/frappe-bench/sites 2>/dev/null || true
+  chown -R frappe:frappe "$SITES_DIR" 2>/dev/null || true
   run_as_frappe "$@"
 fi
 
