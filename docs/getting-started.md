@@ -178,6 +178,21 @@ bench --site mysite.com console
 # Or use the web UI: Setup → Customize → DocType → New
 ```
 
+## Documentación RRHH (ciclo de vida)
+
+Índice y separación extensión / funcionalidades / infra: **[docs/rrhh/README.md](rrhh/README.md)**.
+
+- [Organización del trabajo](rrhh/organizacion.md)
+- [Validación piloto HRMS](rrhh/infra/validate-pilot.md)
+- [Matriz taller cliente](rrhh/producto/workshop-matriz.md)
+- [Flujo configuración HRMS](rrhh/infra/hrms-config-flow.md)
+- [Trazabilidad RFT](rrhh/producto/ciclo-vida-rft.md)
+- [Criterios de aceptación (UAT)](rrhh/producto/criterios-aceptacion.md)
+- [Instalar rrhh_seleccion](rrhh/infra/install-seleccion.md)
+- [UAT piloto pwd](rrhh/operaciones/uat-pwd-checklist.md)
+- [Runbook producción](rrhh/operaciones/production-runbook.md)
+
+
 ## Development Workflow
 
 ### Quick Test Setup (pwd.yml)

@@ -1,0 +1,2 @@
+# Evita CRLF en scripts que se copian a imágenes Linux (shebang /bin/bash\r falla en runtime).
+*.sh text eol=lf

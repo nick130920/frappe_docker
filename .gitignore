@@ -1,5 +1,6 @@
 # Environment Variables
 .env
+pwd-hrms.env
 
 # mounted volume
 sites

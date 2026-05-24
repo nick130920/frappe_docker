@@ -1,0 +1,3 @@
+[submodule "resources/rrhh_seleccion"]
+	path = resources/rrhh_seleccion
+	url = https://github.com/nick130920/rrhh_seleccion.git
