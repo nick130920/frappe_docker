@@ -1,0 +1,46 @@
+name: Build ERPNext HRMS image for Railway
+
+on:
+  push:
+    branches:
+      - rrhh/piloto-hrms
+      - main
+    paths:
+      - apps.json
+      - railway/Dockerfile
+      - images/layered/Containerfile
+      - resources/rrhh_seleccion/**
+      - resources/core/**
+      - .github/workflows/railway-image.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: railway/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/nick130920/erpnext-hrms:railway
+            ghcr.io/nick130920/erpnext-hrms:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

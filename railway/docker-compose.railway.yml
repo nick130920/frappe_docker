@@ -1,0 +1,153 @@
+# Stack Frappe HRMS + rrhh_seleccion adaptado a Railway.
+# - Un solo volumen por servicio (Railway no admite varios).
+# - Sin sección deploy (Swarm).
+# Importar: arrastrar este archivo al canvas de Railway o crear servicios manualmente.
+#
+# Requiere imagen preconstruida (ver .github/workflows/railway-image.yml).
+
+x-erpnext-hrms-image: &erpnext_hrms_image
+  image: ${ERPNext_HRMS_IMAGE:-ghcr.io/nick130920/erpnext-hrms:railway}
+
+x-frappe-volumes: &frappe_volumes
+  - sites:/home/frappe/frappe-bench/sites
+
+services:
+  db:
+    image: mariadb:11.8
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  redis:
+    image: redis:6.2-alpine
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+
+  configurator:
+    <<: *erpnext_hrms_image
+    restart: "no"
+    entrypoint: [bash, -c]
+    command:
+      - |
+        ls -1 apps > sites/apps.txt
+        bench set-config -g db_host $$DB_HOST
+        bench set-config -gp db_port $$DB_PORT
+        bench set-config -g redis_cache "$$REDIS_CACHE"
+        bench set-config -g redis_queue "$$REDIS_QUEUE"
+        bench set-config -g redis_socketio "$$REDIS_QUEUE"
+        bench set-config -gp socketio_port $$SOCKETIO_PORT
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      REDIS_CACHE: redis://redis:6379/0
+      REDIS_QUEUE: redis://redis:6379/1
+      SOCKETIO_PORT: "9000"
+    volumes: *frappe_volumes
+
+  create-site:
+    <<: *erpnext_hrms_image
+    restart: "no"
+    entrypoint: [bash, -c]
+    command:
+      - |
+        set -e
+        wait-for-it -t 300 db:3306
+        wait-for-it -t 120 redis:6379
+        start=$$(date +%s)
+        until grep -q db_host sites/common_site_config.json 2>/dev/null; do
+          echo "Esperando configurator..."
+          sleep 5
+          if [ $$(date +%s) -ge $$((start + 180)) ]; then exit 1; fi
+        done
+        if [ -f sites/frontend/site_config.json ]; then
+          echo "Sitio frontend ya existe"
+          exit 0
+        fi
+        bench new-site frontend \
+          --mariadb-user-host-login-scope='%' \
+          --admin-password="$${FRAPPE_ADMIN_PASSWORD}" \
+          --db-root-username=root \
+          --db-root-password="$${MYSQL_ROOT_PASSWORD}" \
+          --install-app erpnext \
+          --install-app hrms \
+          --set-default
+        bench --site frontend install-app rrhh_seleccion
+        bench --site frontend migrate
+        echo "Sitio creado"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      FRAPPE_ADMIN_PASSWORD: ${FRAPPE_ADMIN_PASSWORD:?set FRAPPE_ADMIN_PASSWORD}
+    volumes: *frappe_volumes
+
+  backend:
+    <<: *erpnext_hrms_image
+    restart: unless-stopped
+    command: [start.sh]
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes: *frappe_volumes
+
+  frontend:
+    <<: *erpnext_hrms_image
+    restart: unless-stopped
+    command: [nginx-entrypoint.sh]
+    environment:
+      BACKEND: backend:8000
+      FRAPPE_SITE_NAME_HEADER: ${FRAPPE_SITE_NAME_HEADER:-$host}
+      SOCKETIO: websocket:9000
+      UPSTREAM_REAL_IP_ADDRESS: 127.0.0.1
+      UPSTREAM_REAL_IP_HEADER: X-Forwarded-For
+      UPSTREAM_REAL_IP_RECURSIVE: "off"
+      PROXY_READ_TIMEOUT: 120
+      CLIENT_MAX_BODY_SIZE: 50m
+    volumes: *frappe_volumes
+    expose:
+      - "8080"
+
+  websocket:
+    <<: *erpnext_hrms_image
+    restart: unless-stopped
+    command:
+      - node
+      - /home/frappe/frappe-bench/apps/frappe/socketio.js
+    environment:
+      FRAPPE_REDIS_CACHE: redis://redis:6379/0
+      FRAPPE_REDIS_QUEUE: redis://redis:6379/1
+    volumes: *frappe_volumes
+
+  scheduler:
+    <<: *erpnext_hrms_image
+    restart: unless-stopped
+    command: [bench, schedule]
+    volumes: *frappe_volumes
+
+  queue:
+    <<: *erpnext_hrms_image
+    restart: unless-stopped
+    command: [bench, worker, --queue, long,default,short]
+    environment:
+      FRAPPE_REDIS_CACHE: redis://redis:6379/0
+      FRAPPE_REDIS_QUEUE: redis://redis:6379/1
+    volumes: *frappe_volumes
+
+volumes:
+  db-data:
+  redis-data:
+  sites:

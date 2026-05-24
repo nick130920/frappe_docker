@@ -38,6 +38,10 @@ git merge upstream/main   # o rebase, según tu flujo
 - [docs/rrhh/organizacion.md](docs/rrhh/organizacion.md) — extensión vs funcionalidades vs infra
 - [docs/rrhh/infra/repo-setup.md](docs/rrhh/infra/repo-setup.md) — clonar submódulos y desarrollo
 
+## Railway (nube)
+
+Guía: [docs/rrhh/infra/deploy-railway.md](docs/rrhh/infra/deploy-railway.md) — compose en `railway/docker-compose.railway.yml`, imagen `ghcr.io/nick130920/erpnext-hrms:railway`.
+
 ## Clonar con la app
 
 ```bash

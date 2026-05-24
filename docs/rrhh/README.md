@@ -25,6 +25,7 @@ Clonar, submódulos y remotes: **[infra/repo-setup.md](infra/repo-setup.md)**.
 ### Infra (HRMS + app en Docker / bench)
 
 - [Configuración del repositorio](infra/repo-setup.md)
+- [Despliegue en Railway](infra/deploy-railway.md)
 - [Flujo configuración HRMS](infra/hrms-config-flow.md)
 - [Validación piloto HRMS](infra/validate-pilot.md)
 - [Instalar `rrhh_seleccion`](infra/install-seleccion.md)
