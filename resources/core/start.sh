@@ -11,6 +11,10 @@ if [ -x /usr/local/bin/ensure-domains.sh ]; then
   /usr/local/bin/ensure-domains.sh
 fi
 
+if [ -x /usr/local/bin/publish-site-config.sh ]; then
+  /usr/local/bin/publish-site-config.sh || true
+fi
+
 #Gunicorn defaults
 GUNICORN_THREADS=${GUNICORN_THREADS:-4}
 GUNICORN_WORKERS=${GUNICORN_WORKERS:-2}

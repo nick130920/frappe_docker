@@ -46,3 +46,30 @@ set_key("socketio_port", env("SOCKETIO_PORT", "9000"), is_port=True)
 path.write_text(json.dumps(cfg, indent=1) + "\n")
 print("ensure-railway-config:", json.dumps(cfg))
 PY
+
+SITE="${FRAPPE_SITE_NAME:-frontend}"
+SITE_CFG="sites/${SITE}/site_config.json"
+if [ ! -f "$SITE_CFG" ]; then
+  python3 <<PY
+import os
+from pathlib import Path
+
+import redis
+
+site = os.environ.get("FRAPPE_SITE_NAME", "frontend")
+redis_url = os.environ.get("REDIS_CACHE", "redis://redis:6379/0")
+key = f"railway:site_config:{site}"
+cfg_path = Path(f"sites/{site}/site_config.json")
+
+r = redis.from_url(redis_url)
+raw = r.get(key)
+if not raw:
+    print(f"ensure-railway-config: no site_config in redis ({key})")
+    raise SystemExit(0)
+
+cfg_path.parent.mkdir(parents=True, exist_ok=True)
+text = raw.decode() if isinstance(raw, bytes) else raw
+cfg_path.write_text(text)
+print(f"ensure-railway-config: restored {cfg_path} from redis")
+PY
+fi
