@@ -34,6 +34,34 @@ run_as_frappe() {
   exec "$@"
 }
 
+# Railway: comando según nombre del servicio (sin editar Start Command en dashboard).
+case "${RAILWAY_SERVICE_NAME:-}" in
+  frontend)
+    if [ -x /usr/local/bin/start-frontend-proxy.sh ]; then
+      set -- /usr/local/bin/start-frontend-proxy.sh
+    fi
+    ;;
+  configurator)
+    if [ -x /usr/local/bin/run-configurator.sh ]; then
+      set -- /usr/local/bin/run-configurator.sh
+    fi
+    ;;
+  create-site)
+    if [ -x /usr/local/bin/init-site.sh ]; then
+      set -- /usr/local/bin/init-site.sh
+    fi
+    ;;
+  websocket)
+    set -- node /home/frappe/frappe-bench/apps/frappe/socketio.js
+    ;;
+  scheduler)
+    set -- bench schedule
+    ;;
+  queue)
+    set -- bench worker --queue long,default,short
+    ;;
+esac
+
 if [ "$(id -u)" = "0" ]; then
   chown -R frappe:frappe "$SITES_DIR" 2>/dev/null || true
   link_assets
