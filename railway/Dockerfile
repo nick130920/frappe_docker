@@ -58,12 +58,13 @@ COPY railway/scripts/start-frontend-proxy.sh /usr/local/bin/start-frontend-proxy
 COPY railway/scripts/ensure-domains.sh /usr/local/bin/ensure-domains.sh
 COPY railway/scripts/ensure-railway-config.sh /usr/local/bin/ensure-railway-config.sh
 COPY railway/scripts/publish-site-config.sh /usr/local/bin/publish-site-config.sh
+COPY railway/scripts/resolve-railway-host.sh /usr/local/bin/resolve-railway-host.sh
 COPY railway/scripts/run-configurator.sh /usr/local/bin/run-configurator.sh
 COPY railway/scripts/nginx-railway-proxy.conf /etc/nginx/conf.d/railway-proxy.conf.template
 RUN chmod 755 /usr/local/bin/init-site.sh /usr/local/bin/start-frontend.sh \
   /usr/local/bin/start-frontend-proxy.sh /usr/local/bin/ensure-domains.sh \
   /usr/local/bin/ensure-railway-config.sh /usr/local/bin/publish-site-config.sh \
-  /usr/local/bin/run-configurator.sh
+  /usr/local/bin/resolve-railway-host.sh /usr/local/bin/run-configurator.sh
 
 # Root entrypoint ajusta permisos de volúmenes Railway y ejecuta como frappe
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

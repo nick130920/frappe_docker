@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ -f /usr/local/bin/resolve-railway-host.sh ]; then
+  # shellcheck source=/usr/local/bin/resolve-railway-host.sh
+  . /usr/local/bin/resolve-railway-host.sh
+fi
+
 # Set variables that do not exist
 if [[ -z "$BACKEND" ]]; then
   echo "BACKEND defaulting to backend.railway.internal:8000"
@@ -39,6 +44,12 @@ fi
 if [[ -z "$CLIENT_MAX_BODY_SIZE" ]]; then
   echo "CLIENT_MAX_BODY_SIZE defaulting to 50m"
   export CLIENT_MAX_BODY_SIZE=50m
+fi
+
+if command -v resolve_host_port >/dev/null 2>&1; then
+  export BACKEND="$(resolve_host_port "$BACKEND")"
+  export SOCKETIO="$(resolve_host_port "$SOCKETIO")"
+  echo "Resolved BACKEND=$BACKEND SOCKETIO=$SOCKETIO"
 fi
 
 # shellcheck disable=SC2016
