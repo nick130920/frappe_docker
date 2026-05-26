@@ -2,8 +2,8 @@
 # Arranque nginx para Railway (red privada + puerto público).
 set -e
 
-export BACKEND="${BACKEND:-backend:8000}"
-export SOCKETIO="${SOCKETIO:-websocket:9000}"
+export BACKEND="${BACKEND:-backend.railway.internal:8000}"
+export SOCKETIO="${SOCKETIO:-websocket.railway.internal:9000}"
 export FRAPPE_SITE_NAME_HEADER="${FRAPPE_SITE_NAME_HEADER:-\$host}"
 export PORT="${PORT:-8080}"
 export UPSTREAM_REAL_IP_ADDRESS="${UPSTREAM_REAL_IP_ADDRESS:-127.0.0.1}"

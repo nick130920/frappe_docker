@@ -2,12 +2,12 @@
 
 # Set variables that do not exist
 if [[ -z "$BACKEND" ]]; then
-  echo "BACKEND defaulting to backend:8000"
-  export BACKEND=backend:8000
+  echo "BACKEND defaulting to backend.railway.internal:8000"
+  export BACKEND=backend.railway.internal:8000
 fi
 if [[ -z "$SOCKETIO" ]]; then
-  echo "SOCKETIO defaulting to websocket:9000"
-  export SOCKETIO=websocket:9000
+  echo "SOCKETIO defaulting to websocket.railway.internal:9000"
+  export SOCKETIO=websocket.railway.internal:9000
 fi
 if [[ -z "$PORT" ]]; then
   export PORT=8080
