@@ -2,8 +2,8 @@
 # Frontend en Railway sin volumen compartido: solo proxy a backend + websocket.
 set -e
 
-export BACKEND_UPSTREAM="${BACKEND_UPSTREAM:-backend.railway.internal:8000}"
-export SOCKETIO_UPSTREAM="${SOCKETIO_UPSTREAM:-websocket.railway.internal:9000}"
+export BACKEND_UPSTREAM="${BACKEND_UPSTREAM:-${BACKEND:-backend.railway.internal:8000}}"
+export SOCKETIO_UPSTREAM="${SOCKETIO_UPSTREAM:-${SOCKETIO:-websocket.railway.internal:9000}}"
 export NGINX_PORT="${PORT:-8080}"
 
 echo "frontend-proxy: BACKEND=$BACKEND_UPSTREAM SOCKETIO=$SOCKETIO_UPSTREAM PORT=$NGINX_PORT"
