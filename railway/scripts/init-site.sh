@@ -12,6 +12,10 @@ wait-for-it -t 300 db:3306
 wait-for-it -t 120 redis:6379
 
 echo "==> Configuración global del bench..."
+mkdir -p sites
+if [ ! -f sites/common_site_config.json ]; then
+  echo "{}" > sites/common_site_config.json
+fi
 ls -1 apps > sites/apps.txt
 bench set-config -g db_host db
 bench set-config -gp db_port 3306
