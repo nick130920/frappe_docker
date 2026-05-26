@@ -3,13 +3,13 @@
 set -e
 cd /home/frappe/frappe-bench
 
-REDIS_HOST="${REDIS_HOST:-redis}"
-REDIS_CACHE="${REDIS_CACHE:-redis://${REDIS_HOST}:6379/0}"
-REDIS_QUEUE="${REDIS_QUEUE:-redis://${REDIS_HOST}:6379/1}"
-REDIS_SOCKETIO="${REDIS_SOCKETIO:-${REDIS_QUEUE}}"
-DB_HOST="${DB_HOST:-db}"
-DB_PORT="${DB_PORT:-3306}"
-SOCKETIO_PORT="${SOCKETIO_PORT:-9000}"
+export REDIS_HOST="${REDIS_HOST:-redis}"
+export REDIS_CACHE="${REDIS_CACHE:-redis://${REDIS_HOST}:6379/0}"
+export REDIS_QUEUE="${REDIS_QUEUE:-redis://${REDIS_HOST}:6379/1}"
+export REDIS_SOCKETIO="${REDIS_SOCKETIO:-${REDIS_QUEUE}}"
+export DB_HOST="${DB_HOST:-db}"
+export DB_PORT="${DB_PORT:-3306}"
+export SOCKETIO_PORT="${SOCKETIO_PORT:-9000}"
 
 mkdir -p sites
 ls -1 apps > sites/apps.txt 2>/dev/null || true
@@ -33,12 +33,15 @@ def set_key(key, value, is_port=False):
     else:
         cfg[key] = value
 
-set_key("db_host", os.environ["DB_HOST"])
-set_key("db_port", os.environ["DB_PORT"], is_port=True)
-set_key("redis_cache", os.environ["REDIS_CACHE"])
-set_key("redis_queue", os.environ["REDIS_QUEUE"])
-set_key("redis_socketio", os.environ["REDIS_SOCKETIO"])
-set_key("socketio_port", os.environ["SOCKETIO_PORT"], is_port=True)
+def env(name, default=""):
+    return os.environ.get(name, default)
+
+set_key("db_host", env("DB_HOST", "db"))
+set_key("db_port", env("DB_PORT", "3306"), is_port=True)
+set_key("redis_cache", env("REDIS_CACHE", "redis://redis:6379/0"))
+set_key("redis_queue", env("REDIS_QUEUE", "redis://redis:6379/1"))
+set_key("redis_socketio", env("REDIS_SOCKETIO", env("REDIS_QUEUE", "redis://redis:6379/1")))
+set_key("socketio_port", env("SOCKETIO_PORT", "9000"), is_port=True)
 
 path.write_text(json.dumps(cfg, indent=1) + "\n")
 print("ensure-railway-config:", json.dumps(cfg))
