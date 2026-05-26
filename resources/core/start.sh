@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# Railway / primer arranque: crear sitio si no existe (requiere MYSQL_ROOT_PASSWORD y FRAPPE_ADMIN_PASSWORD).
+if [ -x /usr/local/bin/init-site.sh ] && [ ! -f /home/frappe/frappe-bench/sites/frontend/site_config.json ]; then
+  echo "Sitio frontend no encontrado; ejecutando init-site.sh..."
+  /usr/local/bin/init-site.sh
+fi
+
 #Gunicorn defaults
 GUNICORN_THREADS=${GUNICORN_THREADS:-4}
 GUNICORN_WORKERS=${GUNICORN_WORKERS:-2}

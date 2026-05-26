@@ -48,6 +48,8 @@ COPY resources/core/main-entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod 755 /usr/local/bin/entrypoint.sh
 COPY resources/core/start.sh /usr/local/bin/start.sh
 RUN chmod 755 /usr/local/bin/start.sh
+COPY railway/scripts/init-site.sh /usr/local/bin/init-site.sh
+RUN chmod 755 /usr/local/bin/init-site.sh
 
 # Root entrypoint ajusta permisos de volúmenes Railway y ejecuta como frappe
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
