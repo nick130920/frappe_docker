@@ -7,7 +7,7 @@ Los servicios creados con **Docker Image** usan por defecto `start.sh` (Gunicorn
 | Servicio | Start Command |
 |----------|----------------|
 | **backend** | `start.sh` |
-| **frontend** | `nginx-entrypoint.sh` |
+| **frontend** | `start-frontend.sh` (o `nginx-entrypoint.sh` con vars abajo) |
 | **websocket** | `node /home/frappe/frappe-bench/apps/frappe/socketio.js` |
 | **scheduler** | `bench schedule` |
 | **queue** | `bench worker --queue long,default,short` |
@@ -15,6 +15,17 @@ Los servicios creados con **Docker Image** usan por defecto `start.sh` (Gunicorn
 | **create-site** | Ver `railway/config/create-site.toml` → `[deploy] startCommand` |
 
 **frontend → Networking:** puerto público **8080** (no 8000).
+
+**frontend → Variables** (si no usas `start-frontend.sh`):
+
+```env
+BACKEND=backend:8000
+SOCKETIO=websocket:9000
+FRAPPE_SITE_NAME_HEADER=$host
+PORT=8080
+```
+
+**frontend → Volume:** el mismo volumen que `backend` en `/home/frappe/frappe-bench/sites` (sin esto → 502 o sitio vacío).
 
 **Variables compartidas** (Raw Editor a nivel proyecto o en create-site/backend):
 

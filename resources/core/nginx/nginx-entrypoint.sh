@@ -2,12 +2,15 @@
 
 # Set variables that do not exist
 if [[ -z "$BACKEND" ]]; then
-  echo "BACKEND defaulting to 0.0.0.0:8000"
-  export BACKEND=0.0.0.0:8000
+  echo "BACKEND defaulting to backend:8000"
+  export BACKEND=backend:8000
 fi
 if [[ -z "$SOCKETIO" ]]; then
-  echo "SOCKETIO defaulting to 0.0.0.0:9000"
-  export SOCKETIO=0.0.0.0:9000
+  echo "SOCKETIO defaulting to websocket:9000"
+  export SOCKETIO=websocket:9000
+fi
+if [[ -z "$PORT" ]]; then
+  export PORT=8080
 fi
 if [[ -z "$UPSTREAM_REAL_IP_ADDRESS" ]]; then
   echo "UPSTREAM_REAL_IP_ADDRESS defaulting to 127.0.0.1"
@@ -41,6 +44,7 @@ fi
 # shellcheck disable=SC2016
 envsubst '${BACKEND}
   ${SOCKETIO}
+  ${PORT}
   ${UPSTREAM_REAL_IP_ADDRESS}
   ${UPSTREAM_REAL_IP_HEADER}
   ${UPSTREAM_REAL_IP_RECURSIVE}

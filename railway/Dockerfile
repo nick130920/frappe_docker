@@ -44,12 +44,17 @@ RUN cp -r /home/frappe/frappe-bench/sites/assets /home/frappe/frappe-bench/asset
 VOLUME ["/home/frappe/frappe-bench/sites"]
 
 USER root
+COPY resources/core/nginx/nginx-template.conf /templates/nginx/frappe.conf.template
+COPY resources/core/nginx/nginx-entrypoint.sh /usr/local/bin/nginx-entrypoint.sh
+COPY resources/core/nginx/security_headers.conf /etc/nginx/snippets/security_headers.conf
+RUN chmod 644 /templates/nginx/frappe.conf.template && chmod 755 /usr/local/bin/nginx-entrypoint.sh
 COPY resources/core/main-entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod 755 /usr/local/bin/entrypoint.sh
 COPY resources/core/start.sh /usr/local/bin/start.sh
 RUN chmod 755 /usr/local/bin/start.sh
 COPY railway/scripts/init-site.sh /usr/local/bin/init-site.sh
-RUN chmod 755 /usr/local/bin/init-site.sh
+COPY railway/scripts/start-frontend.sh /usr/local/bin/start-frontend.sh
+RUN chmod 755 /usr/local/bin/init-site.sh /usr/local/bin/start-frontend.sh
 
 # Root entrypoint ajusta permisos de volúmenes Railway y ejecuta como frappe
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
