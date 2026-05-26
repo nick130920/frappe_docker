@@ -17,8 +17,7 @@ add_one "frontend-production-ba28.up.railway.app"
 add_one "backend-production-da76c.up.railway.app"
 
 if [ -n "${RAILWAY_EXTRA_DOMAINS:-}" ]; then
-  IFS=',' read -ra EXTRA <<< "${RAILWAY_EXTRA_DOMAINS}"
-  for d in "${EXTRA[@]}"; do
+  echo "${RAILWAY_EXTRA_DOMAINS}" | tr ',' '\n' | while read -r d; do
     add_one "$(echo "$d" | xargs)"
   done
 fi
