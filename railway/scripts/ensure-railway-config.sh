@@ -14,7 +14,9 @@ export SOCKETIO_PORT="${SOCKETIO_PORT:-9000}"
 mkdir -p sites
 ls -1 apps > sites/apps.txt 2>/dev/null || true
 
-python3 <<PY
+PYTHON="${PYTHON:-/home/frappe/frappe-bench/env/bin/python3}"
+
+"$PYTHON" <<PY
 import json
 import os
 from pathlib import Path
@@ -50,7 +52,7 @@ PY
 SITE="${FRAPPE_SITE_NAME:-frontend}"
 SITE_CFG="sites/${SITE}/site_config.json"
 if [ ! -f "$SITE_CFG" ]; then
-  python3 <<PY
+  "$PYTHON" <<PY
 import os
 from pathlib import Path
 

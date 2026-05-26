@@ -9,7 +9,8 @@ CFG="sites/${SITE}/site_config.json"
 
 export REDIS_CACHE="${REDIS_CACHE:-redis://redis:6379/0}"
 
-python3 <<PY
+PYTHON="${PYTHON:-/home/frappe/frappe-bench/env/bin/python3}"
+"$PYTHON" <<PY
 import json
 import os
 from pathlib import Path

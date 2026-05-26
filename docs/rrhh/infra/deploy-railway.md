@@ -25,9 +25,11 @@ Stack: **ERPNext + HRMS + `rrhh_seleccion`**, basado en `pwd.yml` pero adaptado 
 
 ## Paso 2 — Proyecto Railway
 
-1. [Dashboard](https://railway.com/dashboard) → **New Project** → **Empty Project**.
-2. Arrastra al canvas el archivo **`railway/docker-compose.railway.yml`** del repo (o importa desde GitHub conectando el repo y eligiendo ese compose).
-3. Si el import falla, crea cada servicio manualmente según la sección [Servicios](#servicios-manuales).
+Proyecto CLI ya creado: **`rrhh-pwd-hrms`** (vinculado con `railway link -p …` desde este repo).
+
+1. [Abrir proyecto](https://railway.com/project/14025ec2-fe3b-422e-a4ae-672bb7b156bc) en el dashboard.
+2. **Importante:** tras añadir servicios por imagen, configura **Start Command** por servicio → [railway/RAILWAY-START-COMMANDS.md](../../../railway/RAILWAY-START-COMMANDS.md).
+3. Alternativa: arrastra **`railway/docker-compose.railway.yml`** al canvas (si el import falla, los servicios ya pueden estar creados por CLI).
 
 ## Paso 3 — Variables de entorno
 
@@ -69,7 +71,15 @@ Si `create-site` ya corrió, no lo vuelvas a lanzar salvo que borres el volumen 
 
 ## Paso 7 — Dominio del sitio Frappe
 
-El sitio se crea como **`frontend`**. Con dominio Railway `https://tu-app.up.railway.app`, entra por SSH/shell al servicio **backend**:
+El sitio se crea como **`frontend`**. En el servicio **frontend** (sin volumen `sites` compartido) define:
+
+```bash
+FRAPPE_SITE_NAME_HEADER=frontend
+```
+
+No uses `$host` en PowerShell al crear la variable (se expande al nombre de tu PC). Con eso nginx envía `X-Frappe-Site-Name: frontend` al backend.
+
+Opcional: dominios extra en **backend** (`ensure-domains.sh` al arranque) o manualmente:
 
 ```bash
 railway ssh --service backend
@@ -112,7 +122,9 @@ railway ssh --service backend
 ## Problemas frecuentes
 
 - **401 al pull de GHCR**: paquete privado → hazlo público o añade `DOCKER_REGISTRY` credentials en Railway.
-- **502 / sitio no encontrado**: falta `setup add-domain` con tu dominio `.up.railway.app`.
+- **404 «tu-dominio.up.railway.app does not exist»**: en **frontend** falta `FRAPPE_SITE_NAME_HEADER=frontend` (ver paso 7).
+- **websocket / queue crashed (Redis ECONNREFUSED)**: en esos servicios define `REDIS_HOST=redis` y `DB_HOST=db` (sin volumen `sites`; la imagen escribe `common_site_config` al arrancar). El **backend** publica `site_config` en Redis para **queue** y **scheduler**.
+- **502 / sitio no encontrado**: revisa `BACKEND=backend.railway.internal:8000` y que el backend esté en línea.
 - **create-site falla**: revisa que `configurator` escribió `sites/common_site_config.json` y que `MYSQL_ROOT_PASSWORD` coincide en `db` y `create-site`.
 - **Assets 404**: en backend: `bench --site frontend build --app rrhh_seleccion` y `clear-cache`.
 
