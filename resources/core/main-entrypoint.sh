@@ -51,14 +51,21 @@ case "${RAILWAY_SERVICE_NAME:-}" in
       set -- /usr/local/bin/init-site.sh
     fi
     ;;
-  websocket)
-    set -- node /home/frappe/frappe-bench/apps/frappe/socketio.js
-    ;;
-  scheduler)
-    set -- bench schedule
-    ;;
-  queue)
-    set -- bench worker --queue long,default,short
+  websocket|scheduler|queue)
+    if [ -x /usr/local/bin/ensure-railway-config.sh ]; then
+      /usr/local/bin/ensure-railway-config.sh
+    fi
+    case "${RAILWAY_SERVICE_NAME}" in
+      websocket)
+        set -- node /home/frappe/frappe-bench/apps/frappe/socketio.js
+        ;;
+      scheduler)
+        set -- bench schedule
+        ;;
+      queue)
+        set -- bench worker --queue long,default,short
+        ;;
+    esac
     ;;
 esac
 
