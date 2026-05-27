@@ -15,6 +15,12 @@ if [ -x /usr/local/bin/publish-site-config.sh ]; then
   /usr/local/bin/publish-site-config.sh || true
 fi
 
+# Asegurar assets de rrhh_seleccion en volumen (p. ej. icono desk tras deploy).
+if [ ! -f /home/frappe/frappe-bench/sites/assets/rrhh_seleccion/images/seleccion-app.svg ]; then
+  echo "Compilando assets rrhh_seleccion..."
+  cd /home/frappe/frappe-bench && bench build --app rrhh_seleccion || true
+fi
+
 #Gunicorn defaults
 GUNICORN_THREADS=${GUNICORN_THREADS:-4}
 GUNICORN_WORKERS=${GUNICORN_WORKERS:-2}

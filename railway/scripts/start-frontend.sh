@@ -12,5 +12,10 @@ export UPSTREAM_REAL_IP_RECURSIVE="${UPSTREAM_REAL_IP_RECURSIVE:-off}"
 export PROXY_READ_TIMEOUT="${PROXY_READ_TIMEOUT:-120}"
 export CLIENT_MAX_BODY_SIZE="${CLIENT_MAX_BODY_SIZE:-50m}"
 
+# Railway: el contenedor frontend no monta sites/; /assets debe ir al backend.
+if [ "${RAILWAY_SERVICE_NAME:-}" = "frontend" ] && [ -x /usr/local/bin/start-frontend-proxy.sh ]; then
+  exec /usr/local/bin/start-frontend-proxy.sh
+fi
+
 echo "frontend: BACKEND=$BACKEND SOCKETIO=$SOCKETIO PORT=$PORT"
 exec nginx-entrypoint.sh
