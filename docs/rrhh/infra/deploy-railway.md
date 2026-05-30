@@ -108,6 +108,16 @@ docker build -f railway/Dockerfile -t ghcr.io/nick130920/erpnext-hrms:railway .
 docker push ghcr.io/nick130920/erpnext-hrms:railway
 ```
 
+## Redespliegue (solo imagen GHCR)
+
+No uses `railway up` ni `railway redeploy --from-source` en servicios creados por imagen Docker (dispara Railpack y falla). Usa:
+
+```powershell
+railway redeploy -s backend -y
+```
+
+Detalle: [railway/RAILWAY-DEPLOY.md](../../../railway/RAILWAY-DEPLOY.md).
+
 ## CLI útil
 
 ```bash

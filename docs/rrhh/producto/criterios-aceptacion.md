@@ -4,12 +4,12 @@ Use una fila por criterio. **Estado:** Pendiente / Pass / Fail / N/A.
 
 | ID | Módulo | Precondiciones | Pasos (resumen) | Resultado esperado | Evidencia | RF/RN | Estado | QA |
 |----|--------|----------------|-----------------|---------------------|-----------|-------|--------|-----|
-| CA-VAC-01 | Vacantes | Rol gestión | Crear vacante con campos obligatorios | Registro creado | | RF-01 | Pendiente | |
-| CA-VAC-02 | Vacantes | Vacante existente | Editar, publicar, pausar, cerrar | Estados coherentes | | RF-01 | Pendiente | |
-| CA-VAC-03 | Vacantes | Publicada | Abrir enlace público | Formulario/listado accesible | | RF-01 | Pendiente | |
-| CA-VAC-04 | Vacantes | Pausada/cerrada | Intentar nueva postulación | Bloqueo o mensaje | | RF-01 | Pendiente | |
-| CA-VAC-05 | Vacantes | Listado | Filtrar y buscar | Resultados correctos | | RF-01 | Pendiente | |
-| CA-VAC-06 | Vacantes | Con postulaciones | Intentar eliminar sin control | Imposible o requiere confirmación | | RN-09 | Pendiente | |
+| CA-VAC-01 | Vacantes | Rol gestión | Crear vacante con campos obligatorios | Registro creado | API: creación `Job Opening` (`HR-OPN-2026-0003`) con nombre, cargo, área, ubicación (`Bogota`), tipo de contrato, descripción, `requisitos` (campo custom) y estado (`Paused`). | RF-01 | Pass | 2026-05-27 |
+| CA-VAC-02 | Vacantes | Vacante existente | Editar, publicar, pausar, cerrar | Estados coherentes | API: sobre `HR-OPN-2026-0003` se validó edición de descripción, publicar (`publish=1`), pausar (`status=Paused`) y cerrar (`status=Closed`) con transiciones exitosas. | RF-01 | Pass | 2026-05-27 |
+| CA-VAC-03 | Vacantes | Publicada | Abrir enlace público | Formulario/listado accesible | Web pública OK: `jobs/hases/qa-vacante-20260528031240` responde 200 y muestra opción de aplicar cuando está abierta. | RF-01 | Pass | 2026-05-27 |
+| CA-VAC-04 | Vacantes | Pausada/cerrada | Intentar nueva postulación | Bloqueo o mensaje | Verificado en `HR-OPN-2026-0003`: en `Paused` y `Closed` no aparece en `/jobs` y su ruta pública no muestra opción de aplicar (bloqueo efectivo de nuevas postulaciones). | RF-01 | Pass | 2026-05-27 |
+| CA-VAC-05 | Vacantes | Listado | Filtrar y buscar | Resultados correctos | API listados OK: filtros por `status=Open/Closed` y búsqueda por título (`QA Filtro*`) devuelven resultados correctos. | RF-01 | Pass | 2026-05-27 |
+| CA-VAC-06 | Vacantes | Con postulaciones | Intentar eliminar sin control | Imposible o requiere confirmación | API DELETE bloqueado con `LinkExistsError` al intentar borrar `HR-OPN-2026-0002` con `Job Applicant` asociado. | RN-09 | Pass | 2026-05-27 |
 | CA-POST-01 | Postulación | Vacante publicada | Abrir formulario público sin login | Formulario carga | | RF-02 | Pendiente | |
 | CA-POST-02 | Postulación | — | Completar campos mínimos RFT | Validación guarda | | RF-03 | Pendiente | |
 | CA-POST-03 | Postulación | — | Marcar vehículo | Activa reglas documentos | | RN-02 | Pendiente | |
